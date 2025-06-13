@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empowering farmers with AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #4CAF50;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #f5f5f5;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(139, 195, 74, 0.1)),
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400"><rect fill="%23E8F5E8" width="1200" height="400"/><path fill="%234CAF50" opacity="0.1" d="M0,200 Q300,100 600,200 T1200,200 L1200,400 L0,400 Z"/></svg>');
+            padding: 120px 0 80px;
+            text-align: center;
+            background-size: cover;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: #E8F5E8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: #4CAF50;
+            font-size: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-top: 3rem;
+        }
+
+        .steps-column h3 {
+            color: #4CAF50;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+        }
+
+        .step-number {
+            background: #4CAF50;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-number.orange {
+            background: #FF9800;
+        }
+
+        .step-content h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .step-content p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* App Interface */
+        .app-interface {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+
+        .app-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .app-features {
+            list-style: none;
+        }
+
+        .app-features li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: #666;
+        }
+
+        .app-features li::before {
+            content: '✓';
+            color: #4CAF50;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+
+        .phone-mockup {
+            background: linear-gradient(135deg, #D1C4E9, #F8BBD9);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .phone {
+            background: white;
+            border-radius: 25px;
+            padding: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 200px;
+            height: 350px;
+            border: 3px solid #333;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 15px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .stars {
+            color: #FFD700;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #4CAF50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .author-info h5 {
+            margin-bottom: 0.2rem;
+            color: #2c3e50;
+        }
+
+        .author-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Community Stats */
+        .community {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+
+        .community-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+        }
+
+        .community-image {
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            border-radius: 15px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        /* Registration Form */
+        .registration {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #f8f9fa;
+            padding: 3rem;
+            border-radius: 15px;
+        }
+
+        .form-toggle {
+            display: flex;
+            background: #4CAF50;
+            border-radius: 25px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .form-toggle button {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .form-toggle button.active {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* FAQ */
+        .faq {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+
+        .faq-list {
+            max-width: 800px;
+            margin: 3rem auto 0;
+        }
+
+        .faq-item {
+            background: white;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .faq-question {
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 1.5rem;
+            text-align: left;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-question:hover {
+            background: #f8f9fa;
+        }
+
+        .faq-answer {
+            padding: 0 1.5rem 1.5rem;
+            color: #666;
+            display: none;
+        }
+
+        .faq-answer.active {
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            color: #4CAF50;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section ul li a:hover {
+            color: #4CAF50;
+        }
+
+        .newsletter {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .newsletter input {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: #4CAF50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #444;
+            padding-top: 1rem;
+            text-align: center;
+            color: #bbb;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .steps-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .app-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .community-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Add hover effects for form elements */
+        #registerModal input:focus, #registerModal textarea:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+            outline: none;
+        }
+
+        #registerModal .btn-secondary:hover {
+            background: #e9e9e9;
+            transform: translateY(-2px);
+        }
+
+        #registerModal .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        /* Custom scrollbar for the modal */
+        #registerModal::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #registerModal::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        #registerModal::-webkit-scrollbar-thumb {
+            background: #4CAF50;
+            border-radius: 4px;
+        }
+
+        #registerModal::-webkit-scrollbar-thumb:hover {
+            background: #45a049;
+        }
+
+        /* Login Modal Styling (matches registration modal) */
+        #loginModal input:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+            outline: none;
+        }
+        #loginModal .btn-secondary:hover {
+            background: #e9e9e9;
+            transform: translateY(-2px);
+        }
+        #loginModal .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        #loginModal::-webkit-scrollbar {
+            width: 8px;
+        }
+        #loginModal::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        #loginModal::-webkit-scrollbar-thumb {
+            background: #4CAF50;
+            border-radius: 4px;
+        }
+        #loginModal::-webkit-scrollbar-thumb:hover {
+            background: #45a049;
+        }
+
+        /* Location Picker Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 24px 12px;
+            max-width: 420px;
+            width: 95%;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #4CAF50;
+        }
+
+        #locationMap {
+            width: 100%;
+            height: 260px;
+            border-radius: 12px;
+        }
+
+        #selectedAddress {
+            font-size: 0.98em;
+            color: #333;
+        }
+
+        #setLocationBtn {
+            margin-top: 16px;
+            width: 100%;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 0;
+            font-size: 1em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="container">
+            <div class="logo">Empowering Farmers with AI</div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+            <div class="header-buttons">
+                <a href="#" class="btn btn-secondary" id="openLoginBtn">Login</a>
+                <a href="./registration.html" class="btn btn-primary">Register</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Connect Farmers Directly with Customers</h1>
+            <p>Empowering farmers with AI assistance and providing customers with fresh, local produce straight from the source.</p>
+            
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Powerful Features</h2>
+            <p class="section-subtitle">Our platform offers innovative tools to connect farmers with customers while providing AI-powered assistance.</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <h3>Voice AI Assistant</h3>
+                    <p>Chat with our AI in your native language to get farming advice, crop management tips, and market insights.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Crop Analysis</h3>
+                    <p>Upload photos of your crops to get AI-powered analysis, disease detection, and growth recommendations.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3>Location-Based Discovery</h3>
+                    <p>Customers can find farmers near their location and purchase fresh produce directly from the source.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Secure Transactions</h3>
+                    <p>Safe and transparent payment system with order tracking and history for both parties.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>Multi-language Support</h3>
+                    <p>Use the app in your native language with our comprehensive multi-language support system.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Simple steps to connect farmers with customers and leverage AI assistance.</p>
+            
+            <div class="steps-container">
+                <div class="farmers-steps">
+                    <h3>For Farmers</h3>
+                    
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Create Your Profile</h4>
+                            <p>Register as a farmer, add your location, and set up your profile with details about your farm.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>List Your Crops</h4>
+                            <p>Add your available crops with photos, prices, quantities, and harvest dates.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Get AI Assistance</h4>
+                            <p>Use voice chat or upload photos to get AI-powered advice on crop management.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Fulfill Orders</h4>
+                            <p>Receive orders from customers, arrange delivery or pickup, and get paid directly.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="customers-steps">
+                    <h3>For Customers</h3>
+                    
+                    <div class="step">
+                        <div class="step-number orange">1</div>
+                        <div class="step-content">
+                            <h4>Create Your Account</h4>
+                            <p>Register as a customer, set your location, and customize your preferences.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number orange">2</div>
+                        <div class="step-content">
+                            <h4>Discover Local Farmers</h4>
+                            <p>Browse farmers near you using the map or list view and filter by crop type.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number orange">3</div>
+                        <div class="step-content">
+                            <h4>Place Orders</h4>
+                            <p>Select crops from farmers, add them to your cart, and place your order securely.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number orange">4</div>
+                        <div class="step-content">
+                            <h4>Receive Fresh Produce</h4>
+                            <p>Get your order directly from the farmer through pickup or delivery options.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Interface -->
+    <section class="app-interface">
+        <div class="container">
+            <div class="app-content">
+                <div>
+                    <h2>Experience the App Interface</h2>
+                    <p>Our intuitive app design makes it easy for both farmers and customers to navigate and use all features efficiently.</p>
+                    
+                    <ul class="app-features">
+                        <li>Separate dashboards for farmers and customers</li>
+                        <li>Voice-enabled AI assistant in multiple languages</li>
+                        <li>Interactive map for finding nearby farmers</li>
+                        <li>Simple crop listing and management tools</li>
+                    </ul>
+                    
+                    <div style="margin-top: 2rem;">
+                        <a href="#" class="btn btn-primary">View Demo</a>
+                        <a href="#" class="btn btn-secondary">Learn More</a>
+                    </div>
+                </div>
+                
+                <div class="phone-mockup">
+                    <div class="phone">
+                        <div style="text-align: center; padding: 2rem; color: #666;">
+                            <i class="fas fa-mobile-alt" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <p>Empowering Farmers with AI Mobile App</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="testimonials">
+        <div class="container">
+            <h2 class="section-title">What Our Users Say</h2>
+            <p class="section-subtitle">Hear from farmers and customers who have transformed their experience with Empowering Farmers with AI.</p>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial">
+                    <div class="stars">★★★★★</div>
+                    <p class="testimonial-text">"The AI assistant helped me identify a disease in my tomato plants early. I followed the recommendations and saved my entire crop. This app has been a game-changer for my small farm."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">RJ</div>
+                        <div class="author-info">
+                            <h5>Robert Johnson</h5>
+                            <p>Vegetable Farmer, Oregon</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial">
+                    <div class="stars">★★★★★</div>
+                    <p class="testimonial-text">"I love being able to chat with the AI in Hindi. It understands my questions about crop rotation and gives practical advice that works for my specific region and soil conditions."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">PS</div>
+                        <div class="author-info">
+                            <h5>Priya Sharma</h5>
+                            <p>Rice Farmer, Maharashtra</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial">
+                    <div class="stars">★★★★★</div>
+                    <p class="testimonial-text">"As a customer, I love knowing exactly where my food comes from. I've connected with three local farmers and now get all my produce directly from them. The quality is amazing!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">ER</div>
+                        <div class="author-info">
+                            <h5>Emily Rodriguez</h5>
+                            <p>Customer, California</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Stats -->
+    <section class="community">
+        <div class="container">
+            <h2 class="section-title">Join Our Growing Community</h2>
+            <p class="section-subtitle">Be part of a movement that's transforming agriculture and food systems by connecting farmers directly with consumers.</p>
+            
+            <div class="community-content">
+                <div class="stats-grid">
+                    <div class="stat">
+                        <div class="stat-number">5,000+</div>
+                        <div class="stat-label">Registered Farmers</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">12,000+</div>
+                        <div class="stat-label">Active Customers</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">50,000+</div>
+                        <div class="stat-label">Orders Completed</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">25+</div>
+                        <div class="stat-label">Languages Supported</div>
+                    </div>
+                </div>
+                
+                <div class="community-image">
+                    <div style="text-align: center;">
+                        <i class="fas fa-users" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                        <p>Growing Community of Farmers & Customers</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="#" class="btn btn-primary">Download App</a>
+                <a href="#" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; overflow-y: auto; backdrop-filter: blur(5px);">
+      <div style="position: relative; margin: 2rem auto; background: white; padding: 2.5rem; border-radius: 20px; width: 90%; max-width: 450px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        <button onclick="closeLogin()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666; transition: color 0.3s;">×</button>
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <h3 style="font-size: 1.8rem; color: #333; margin-bottom: 0.5rem;">Welcome Back!</h3>
+          <p style="color: #666; font-size: 1rem;">Login to your account</p>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem;">
+          <button class="btn btn-secondary" id="chooseFarmer" style="flex: 1; max-width: 200px; padding: 0.8rem; border-radius: 10px; background: #f5f5f5; color: #333; border: 2px solid #e0e0e0; transition: all 0.3s;">
+            <i class="fas fa-seedling" style="margin-right: 8px;"></i>Farmer
+          </button>
+          <button class="btn btn-secondary" id="chooseCustomer" style="flex: 1; max-width: 200px; padding: 0.8rem; border-radius: 10px; background: #f5f5f5; color: #333; border: 2px solid #e0e0e0; transition: all 0.3s;">
+            <i class="fas fa-shopping-cart" style="margin-right: 8px;"></i>Customer
+          </button>
+        </div>
+        <form id="loginForm" style="display: none;">
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label id="loginLabel" style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Phone Number / Email</label>
+            <input id="loginUser" type="text" placeholder="Enter your phone number or email" style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s;">
+          </div>
+          <div class="form-group" style="margin-bottom: 2rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Password</label>
+            <input id="loginPassword" type="password" placeholder="Enter your password" style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s;">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 10px; background: linear-gradient(135deg, #4CAF50, #45a049); color: white; border: none; font-size: 1.1rem; font-weight: 500; cursor: pointer; transition: all 0.3s;">
+            <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>Login
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div id="registerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; overflow-y: auto; backdrop-filter: blur(5px);">
+      <div style="position: relative; margin: 2rem auto; background: white; padding: 2.5rem; border-radius: 20px; width: 90%; max-width: 450px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        <button onclick="closeRegister()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666; transition: color 0.3s;">×</button>
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <h3 style="font-size: 1.8rem; color: #333; margin-bottom: 0.5rem;">Create Your Account</h3>
+          <p style="color: #666; font-size: 1rem;">Join our community of farmers and customers</p>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem;">
+          <button class="btn btn-secondary" id="registerFarmer" style="flex: 1; max-width: 200px; padding: 0.8rem; border-radius: 10px; background: #f5f5f5; color: #333; border: 2px solid #e0e0e0; transition: all 0.3s;">
+            <i class="fas fa-seedling" style="margin-right: 8px;"></i>Farmer
+          </button>
+          <button class="btn btn-secondary" id="registerCustomer" style="flex: 1; max-width: 200px; padding: 0.8rem; border-radius: 10px; background: #f5f5f5; color: #333; border: 2px solid #e0e0e0; transition: all 0.3s;">
+            <i class="fas fa-shopping-cart" style="margin-right: 8px;"></i>Customer
+          </button>
+        </div>
+        <form id="farmerRegisterForm" style="display: none;">
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">First Name</label>
+            <input type="text" id="farmerFirstName" required style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s;">
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Last Name</label>
+            <input type="text" id="farmerLastName" required style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s;">
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Phone Number</label>
+            <input type="tel" id="farmerPhone" required style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s;">
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Email (Optional)</label>
+            <input type="email" id="farmerEmail" style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s;">
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Farm Name</label>
+            <input type="text" id="farmName" required style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s;">
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Location</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="text" id="farmerLocation" placeholder="Set on map" readonly required style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s; background: #f9f9f9; cursor: pointer;">
+              <button type="button" class="btn btn-secondary" id="farmerLocationBtn" style="padding:8px 14px;font-size:1em;"><i class="fas fa-map-marker-alt"></i></button>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom: 2rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Password</label>
+            <input type="password" id="farmerPassword" required style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s;">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 10px; background: linear-gradient(135deg, #4CAF50, #45a049); color: white; border: none; font-size: 1.1rem; font-weight: 500; cursor: pointer; transition: all 0.3s;">
+            <i class="fas fa-seedling" style="margin-right: 8px;"></i>Register as Farmer
+          </button>
+        </form>
+        <form id="customerRegisterForm" style="display: none;">
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">First Name</label>
+            <input type="text" id="customerFirstName" required style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s;">
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Last Name</label>
+            <input type="text" id="customerLastName" required style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s;">
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Phone Number</label>
+            <input type="tel" id="customerPhone" required style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s;">
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Email</label>
+            <input type="email" id="customerEmail" required style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s;">
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Location</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="text" id="customerLocation" placeholder="Set on map" readonly required style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s; background: #f9f9f9; cursor: pointer;">
+              <button type="button" class="btn btn-secondary" id="customerLocationBtn" style="padding:8px 14px;font-size:1em;"><i class="fas fa-map-marker-alt"></i></button>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Delivery Address</label>
+            <textarea id="customerAddress" required style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s; min-height: 100px; resize: vertical;"></textarea>
+          </div>
+          <div class="form-group" style="margin-bottom: 2rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Password</label>
+            <input type="password" id="customerPassword" required style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s;">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 10px; background: linear-gradient(135deg, #4CAF50, #45a049); color: white; border: none; font-size: 1.1rem; font-weight: 500; cursor: pointer; transition: all 0.3s;">
+            <i class="fas fa-shopping-cart" style="margin-right: 8px;"></i>Register as Customer
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Location Picker Modal -->
+    <div class="modal" id="locationPickerModal">
+      <div class="modal-content" style="max-width: 420px; width: 95%; padding: 24px 12px;">
+        <span class="close-btn" onclick="closeLocationPicker()">&times;</span>
+        <h3 style="margin-bottom: 1rem; color: #388e3c; text-align: center;">Set Your Location</h3>
+        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+          <input type="text" id="locationSearchInput" placeholder="Search area/city..." style="flex:1; padding:8px 12px; border-radius:8px; border:1.5px solid #e0e0e0;">
+          <button id="locationSearchBtn" style="background:#4CAF50;color:white;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;"><i class="fas fa-search"></i></button>
+        </div>
+        <div id="locationMap" style="width:100%;height:260px;border-radius:12px;"></div>
+        <div style="margin-top:10px;text-align:center;">
+          <span id="selectedAddress" style="font-size:0.98em;color:#333;"></span>
+        </div>
+        <button id="setLocationBtn" style="margin-top:16px;width:100%;background:#4CAF50;color:white;border:none;border-radius:8px;padding:10px 0;font-size:1em;cursor:pointer;">Set Location</button>
+      </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <p class="section-subtitle">Find answers to common questions about using Empowering Farmers with AI.</p>
+            
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        How does the AI voice assistant work?
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Our AI voice assistant uses advanced natural language processing to understand your farming questions in multiple languages. You can ask about crop diseases, weather conditions, market prices, and get personalized advice based on your location and crop type.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        What languages are supported?
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Empowering Farmers with AI supports over 25 languages including English, Hindi, Spanish, Portuguese, French, German, Mandarin, and many regional languages. The AI assistant can understand and respond in your preferred language.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        How accurate is the crop analysis feature?
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Our AI-powered crop analysis has been trained on thousands of crop images and achieves over 90% accuracy in disease detection and crop health assessment. However, we always recommend consulting with local agricultural experts for critical decisions.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        Is my data secure on the platform?
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes, we take data security very seriously. All data is encrypted in transit and at rest. We comply with international data protection standards and never share your personal information with third parties without your consent.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section style="padding: 80px 0; background: linear-gradient(135deg, #4CAF50, #8BC34A); color: white; text-align: center;">
+        <div class="container">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Ready to Transform Your Farming Experience?</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9;">Join thousands of farmers and customers already using Empowering Farmers with AI to revolutionize the way we grow and buy food.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="#" class="btn" style="background: white; color: #4CAF50; padding: 1rem 2rem; font-size: 1.1rem;">Download App</a>
+                <a href="#" class="btn btn-secondary" style="border-color: white; color: white; padding: 1rem 2rem; font-size: 1.1rem;">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section class="about-us-section" style="padding: 60px 0; background: #f8f9fa;">
+      <div class="container">
+        <h2 class="section-title" style="margin-bottom: 1.5rem;">About Us</h2>
+        <p class="section-subtitle" style="margin-bottom: 2.5rem; max-width: 700px; margin-left: auto; margin-right: auto;">
+          We are a passionate team of three from ACE Engineering College, dedicated to empowering farmers with AI-driven solutions and connecting them directly with customers.
+        </p>
+        <div class="about-team-grid" style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+          <div class="about-card" style="background: white; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); padding: 2rem 1.5rem; text-align: center; width: 260px;">
+            <img src="images/sudu.jpeg" alt="Gaddam Sudeshna Reddy" class="about-avatar" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; margin: 0 auto 1rem; display: block; border: 3px solid #e8f5e8;">
+            <h4 style="margin-bottom: 0.5rem;">Gaddam Sudeshna Reddy</h4>
+            <p style="color: #666; font-size: 1rem; margin-bottom: 0.5rem;">Team Lead</p>
+            <p style="font-size: 0.95rem; color: #888; margin-bottom: 0.5rem;">Roll No: 22AG1A0588</p>
+            <p style="font-size: 0.95rem; color: #888;">ACE Engineering College</p>
+          </div>
+          <div class="about-card" style="background: white; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); padding: 2rem 1.5rem; text-align: center; width: 260px;">
+            <img src="images/sathwik.jpg" alt="Veerala Sathwik Kumar" class="about-avatar" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; margin: 0 auto 1rem; display: block; border: 3px solid #e8f5e8;">
+            <h4 style="margin-bottom: 0.5rem;">Veerala Sathwik Kumar</h4>
+            <p style="color: #666; font-size: 1rem; margin-bottom: 0.5rem;">Developer</p>
+            <p style="font-size: 0.95rem; color: #888; margin-bottom: 0.5rem;">Roll No: 22AG1A05C6</p>
+            <p style="font-size: 0.95rem; color: #888;">ACE Engineering College</p>
+          </div>
+          <div class="about-card" style="background: white; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); padding: 2rem 1.5rem; text-align: center; width: 260px;">
+            <div class="about-avatar" style="width: 80px; height: 80px; background: #e8f5e8; border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #4CAF50;">C</div>
+            <h4 style="margin-bottom: 0.5rem;">KATHERAGANDLA TEJASWINI</h4>
+            <p style="color: #666; font-size: 1rem; margin-bottom: 0.5rem;">Designer</p>
+            <p style="font-size: 0.95rem; color: #888; margin-bottom: 0.5rem;">Roll No: 22AG1A0599</p>
+            <p style="font-size: 0.95rem; color: #888;">ACE Engineering College</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Empowering Farmers with AI</h4>
+                    <p>Connecting farmers directly with customers through innovative technology.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#testimonials">Testimonials</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">Data Protection</a></li>
+                        <li><a href="#">Refund Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> ACE Engineering College, Ankushapur, Hyderabad</p>
+                    <p><i class="fas fa-phone"></i> +91 7981505725</p>
+                    <p><i class="fas fa-envelope"></i> vsathwikkumar29@gmail.com</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Empowering Farmers with AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="notification" style="display:none;position:fixed;top:30px;right:30px;z-index:9999;padding:16px 24px;background:#323232;color:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);font-size:1rem;min-width:200px;text-align:center;transition:opacity 0.3s;opacity:0;"></div>
+
+    <script>
+        // Open login modal
+        const openLoginBtn = document.getElementById('openLoginBtn');
+        const loginModal = document.getElementById('loginModal');
+        openLoginBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          loginModal.style.display = 'block';
+          document.getElementById('loginForm').style.display = 'none';
+        });
+        function closeLogin() {
+          loginModal.style.display = 'none';
+        }
+        loginModal.addEventListener('click', function(e) {
+          if (e.target === loginModal) closeLogin();
+        });
+        // Choose role
+        let loginRole = null;
+        document.getElementById('chooseFarmer').onclick = function() {
+          loginRole = 'farmer';
+          document.getElementById('loginLabel').textContent = 'Phone Number / Email';
+          document.getElementById('loginUser').placeholder = 'Enter your phone number or email';
+          document.getElementById('loginForm').style.display = 'block';
+        };
+        document.getElementById('chooseCustomer').onclick = function() {
+          loginRole = 'customer';
+          document.getElementById('loginLabel').textContent = 'Phone Number / Email';
+          document.getElementById('loginUser').placeholder = 'Enter your phone number or email';
+          document.getElementById('loginForm').style.display = 'block';
+        };
+        // Login form submission
+        const loginForm = document.getElementById('loginForm');
+        loginForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const user = document.getElementById('loginUser').value.trim();
+          const password = document.getElementById('loginPassword').value;
+          if (!user || !password || !loginRole) {
+            showNotification('Please fill all fields and select a role.', 'error');
+            return;
+          }
+          let data = {};
+          // Allow both email and phone for both roles
+          data = user.includes('@') ? { email: user, password } : { phone: user, password };
+          try {
+            const response = await fetch('http://localhost:5000/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            if (response.ok && result.token) {
+              localStorage.setItem('token', result.token);
+              showNotification('Login successful!', 'success');
+              closeLogin();
+              // Redirect based on user type
+              if (result.user && result.user.userType === 'farmer') {
+                window.location.href = './farmer.html';
+              } else if (result.user && result.user.userType === 'customer') {
+                window.location.href = './customer.html';
+              }
+            } else {
+              showNotification(result.message || 'Login failed', 'error');
+            }
+          } catch (err) {
+            showNotification('Error connecting to server', 'error');
+          }
+        });
+        // FAQ toggle functionality
+        function toggleFAQ(button) {
+            const answer = button.nextElementSibling;
+            const icon = button.querySelector('i');
+            // Defensive: Only proceed if answer exists
+            if (!answer) return;
+            // Close all other FAQs
+            document.querySelectorAll('.faq-answer').forEach(item => {
+                if (item !== answer) {
+                    item.classList.remove('active');
+                    if (item.previousElementSibling && item.previousElementSibling.querySelector('i')) {
+                        item.previousElementSibling.querySelector('i').style.transform = 'rotate(0deg)';
+                    }
+                }
+            });
+            // Toggle current FAQ
+            answer.classList.toggle('active');
+            if (icon) {
+                icon.style.transform = answer.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+            }
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add animation to feature cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+
+        // Add hover effects to buttons
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Counter animation for stats
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current).toLocaleString() + '+';
+            }, 20);
+        }
+
+        // Animate counters when they come into view
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const number = entry.target;
+                    const targetValue = parseInt(number.textContent.replace(/[^0-9]/g, ''));
+                    animateCounter(number, targetValue);
+                    statsObserver.unobserve(number);
+                }
+            });
+        });
+
+        document.querySelectorAll('.stat-number').forEach(stat => {
+            statsObserver.observe(stat);
+        });
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+          const notif = document.getElementById('notification');
+          notif.textContent = message;
+          notif.style.background = type === 'error' ? '#d32f2f' : (type === 'success' ? '#388e3c' : '#323232');
+          notif.style.display = 'block';
+          notif.style.opacity = '1';
+          setTimeout(() => {
+            notif.style.opacity = '0';
+            setTimeout(() => { notif.style.display = 'none'; }, 400);
+          }, 3000);
+        }
+
+        // Registration modal functionality
+        const registerBtn = document.querySelector('a[href="./registration.html"]');
+        const registerModal = document.getElementById('registerModal');
+        
+        registerBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          registerModal.style.display = 'block';
+          document.getElementById('farmerRegisterForm').style.display = 'none';
+          document.getElementById('customerRegisterForm').style.display = 'none';
+        });
+
+        function closeRegister() {
+          registerModal.style.display = 'none';
+        }
+
+        registerModal.addEventListener('click', function(e) {
+          if (e.target === registerModal) closeRegister();
+        });
+
+        // Choose registration role
+        document.getElementById('registerFarmer').onclick = function() {
+          document.getElementById('farmerRegisterForm').style.display = 'block';
+          document.getElementById('customerRegisterForm').style.display = 'none';
+        };
+
+        document.getElementById('registerCustomer').onclick = function() {
+          document.getElementById('customerRegisterForm').style.display = 'block';
+          document.getElementById('farmerRegisterForm').style.display = 'none';
+        };
+
+        // Farmer registration form submission
+        document.getElementById('farmerRegisterForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const locationInput = document.getElementById('farmerLocation');
+          const formData = {
+            firstName: document.getElementById('farmerFirstName').value,
+            lastName: document.getElementById('farmerLastName').value,
+            phone: document.getElementById('farmerPhone').value,
+            email: document.getElementById('farmerEmail').value,
+            password: document.getElementById('farmerPassword').value,
+            farmName: document.getElementById('farmName').value,
+            location: {
+              address: locationInput.value,
+              lat: parseFloat(locationInput.dataset.lat),
+              lng: parseFloat(locationInput.dataset.lng)
+            },
+            userType: 'farmer'
+          };
+
+          try {
+            const response = await fetch('http://localhost:5000/api/auth/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(formData)
+            });
+            const result = await response.json();
+            if (response.ok) {
+              showNotification('Registration successful!', 'success');
+              closeRegister();
+              this.reset();
+            } else {
+              showNotification(result.message || 'Registration failed', 'error');
+            }
+          } catch (err) {
+            showNotification('Error connecting to server', 'error');
+          }
+        });
+
+        // Customer registration form submission
+        document.getElementById('customerRegisterForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const locationInput = document.getElementById('customerLocation');
+          const formData = {
+            firstName: document.getElementById('customerFirstName').value,
+            lastName: document.getElementById('customerLastName').value,
+            phone: document.getElementById('customerPhone').value,
+            email: document.getElementById('customerEmail').value,
+            password: document.getElementById('customerPassword').value,
+            location: {
+              address: locationInput.value,
+              lat: parseFloat(locationInput.dataset.lat),
+              lng: parseFloat(locationInput.dataset.lng)
+            },
+            address: document.getElementById('customerAddress').value,
+            userType: 'customer'
+          };
+
+          try {
+            const response = await fetch('http://localhost:5000/api/auth/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(formData)
+            });
+            const result = await response.json();
+            if (response.ok) {
+              showNotification('Registration successful!', 'success');
+              closeRegister();
+              this.reset();
+              setTimeout(function() {
+                window.location.href = './customer.html';
+              }, 1000);
+            } else {
+              showNotification(result.message || 'Registration failed', 'error');
+            }
+          } catch (err) {
+            showNotification('Error connecting to server', 'error');
+          }
+        });
+
+        // Location functionality for both forms
+        document.getElementById('farmerLocation').addEventListener('click', function() {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+              this.value = `Lat: ${position.coords.latitude.toFixed(6)}, Lng: ${position.coords.longitude.toFixed(6)}`;
+            }.bind(this));
+          } else {
+            showNotification('Geolocation is not supported by this browser.', 'error');
+          }
+        });
+
+        document.getElementById('customerLocation').addEventListener('click', function() {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+              this.value = `Lat: ${position.coords.latitude.toFixed(6)}, Lng: ${position.coords.longitude.toFixed(6)}`;
+            }.bind(this));
+          } else {
+            showNotification('Geolocation is not supported by this browser.', 'error');
+          }
+        });
+
+        // Location Picker Logic
+        let locationPickerMap, locationPickerMarker, locationPickerLatLng = null, locationPickerAddress = '';
+        let locationPickerTarget = null;
+        function openLocationPicker(targetInputId) {
+          locationPickerTarget = targetInputId;
+          document.getElementById('locationPickerModal').style.display = 'flex';
+          setTimeout(() => {
+            if (!locationPickerMap) {
+              locationPickerMap = L.map('locationMap').setView([17.385044, 78.486671], 12);
+              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+              }).addTo(locationPickerMap);
+              locationPickerMap.on('click', async function(e) {
+                setLocationPickerMarker(e.latlng.lat, e.latlng.lng);
+                await reverseGeocodeLocation(e.latlng.lat, e.latlng.lng);
+              });
+            } else {
+              locationPickerMap.invalidateSize();
+            }
+          }, 200);
+        }
+        function closeLocationPicker() {
+          document.getElementById('locationPickerModal').style.display = 'none';
+          locationPickerLatLng = null;
+          locationPickerAddress = '';
+          document.getElementById('selectedAddress').textContent = '';
+          if (locationPickerMarker) locationPickerMap.removeLayer(locationPickerMarker);
+        }
+        async function reverseGeocodeLocation(lat, lng) {
+          const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
+          const res = await fetch(url);
+          const data = await res.json();
+          locationPickerAddress = data.display_name || '';
+          document.getElementById('selectedAddress').textContent = locationPickerAddress;
+        }
+        function setLocationPickerMarker(lat, lng) {
+          locationPickerLatLng = { lat, lng };
+          if (locationPickerMarker) locationPickerMap.removeLayer(locationPickerMarker);
+          locationPickerMarker = L.marker([lat, lng]).addTo(locationPickerMap);
+        }
+        document.getElementById('farmerLocationBtn').onclick = function() { openLocationPicker('farmerLocation'); };
+        document.getElementById('customerLocationBtn').onclick = function() { openLocationPicker('customerLocation'); };
+        document.getElementById('setLocationBtn').onclick = function() {
+          if (locationPickerLatLng && locationPickerAddress) {
+            document.getElementById(locationPickerTarget).value = locationPickerAddress;
+            document.getElementById(locationPickerTarget).dataset.lat = locationPickerLatLng.lat;
+            document.getElementById(locationPickerTarget).dataset.lng = locationPickerLatLng.lng;
+            closeLocationPicker();
+          } else {
+            document.getElementById('selectedAddress').textContent = 'Please select a location on the map.';
+          }
+        };
+        document.getElementById('locationSearchBtn').onclick = async function() {
+          const query = document.getElementById('locationSearchInput').value.trim();
+          if (!query) return;
+          const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+          const res = await fetch(url);
+          const data = await res.json();
+          if (data && data.length) {
+            const lat = parseFloat(data[0].lat), lng = parseFloat(data[0].lon);
+            locationPickerMap.setView([lat, lng], 14);
+            setLocationPickerMarker(lat, lng);
+            await reverseGeocodeLocation(lat, lng);
+          }
+        };
+    </script>
+</body>
+</html>
