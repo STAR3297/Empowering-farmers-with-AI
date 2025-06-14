@@ -1,7 +1,23 @@
 {
+  "name": "empowering-farmers-with-ai",
+  "version": "1.0.0",
+  "description": "A platform empowering farmers with AI assistance to connect directly with customers",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.6.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
     "cors": "^2.8.5",
-    "express": "^5.1.0",
+    "dotenv": "^16.3.1",
     "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
